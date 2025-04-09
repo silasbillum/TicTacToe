@@ -1,0 +1,5 @@
+/arduino/.vs
+/arduino/bin
+/arduino/obj
+arduino/appsettings.json
+config.h

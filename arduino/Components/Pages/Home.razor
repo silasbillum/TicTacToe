@@ -1,0 +1,62 @@
+﻿@page "/"
+@inject IHttpClientFactory HttpClientFactory
+@using MQTTnet;
+@using MQTTnet.Client;
+@using System.Text.Json;
+@using System.Text;
+@using System.Text.Json.Serialization;
+@inject GameState _gameState;
+@implements IDisposable
+
+
+
+
+<h3>Game Status</h3>
+
+@if (gameStatus.Count == 0)
+{
+    <p>No moves yet.</p>
+}
+else
+{
+    <ul>
+        @foreach (var move in gameStatus)
+        {
+
+            if (move.Action == "move")
+            {
+                <li>@($"{move.Player} placed {move.Symbol} at ({move.Row}, {move.Col})")</li>
+            }
+            else if (move.Action == "win")
+            {
+                <li><strong>@($"{move.Player} wins with {move.Symbol}!")</strong></li>
+            }
+            else
+            {
+                <li>@($"{move.Player} It was a draw!")</li>
+            }
+        }
+
+    </ul>
+}
+
+@code {
+    private List<GameStatus> gameStatus = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _gameState.OnChange += HandleGameStateChanged;
+        gameStatus = _gameState.Messages.ToArray().ToList();
+    }
+
+    private async void HandleGameStateChanged()
+    {
+        gameStatus = _gameState.Messages.ToArray().ToList();
+        await InvokeAsync(StateHasChanged); // Refreshes the page on the main thread
+    }
+
+    public void Dispose()
+    {
+        _gameState.OnChange -= HandleGameStateChanged;
+    }
+}
