@@ -4,7 +4,7 @@
 #include <ArduinoJson.h>
 #include "config.h"
 const char ssid[] = WIFI_SSID;  // Wi-Fi SSID
-const char password[] = WIFI_PASSWORD  // Wi-Fi Password
+const char password[] = WIFI_PASSWORD;  // Wi-Fi Password
 const char mqtt_server[] = MQTT_SERVER;  // MQTT Broker
 const int mqtt_port = 8883;  // Secure MQTT Port
 const char mqtt_username[] = MQTT_USERNAME;  // MQTT Username
@@ -15,7 +15,6 @@ WiFiSSLClient wifiClient;
 PubSubClient client(wifiClient);
 
 MKRIoTCarrier carrier;
-
 char board[3][3] = {
   {'j ', ' ', ' '}, 
   {' ', ' ', ' '},
@@ -57,6 +56,8 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
 
 
 void setup() {
+  //carrier.noCase();
+  //carrier.begin();
   Serial.begin(9600);
 
 Serial.println("Connecting to WiFi...");
@@ -169,7 +170,7 @@ client.loop();
     return;
   }
 
-  if (carrier.Buttons.onTouchDown(TOUCH0)) { // A: Move left
+  if (carrier.Buttons.onTouchDown(TOUCH3)) { // A: Move left
     if (cursorCol > 0) {
       eraseCursor();
       cursorCol--;
@@ -185,7 +186,7 @@ client.loop();
     }
   }
 
-  if (carrier.Buttons.onTouchDown(TOUCH4)) { // C: Move up
+  if (carrier.Buttons.onTouchDown(TOUCH0)) { // C: Move up
     if (cursorRow > 0) {
       eraseCursor();
       cursorRow--;
@@ -193,14 +194,13 @@ client.loop();
     }
   }
 
-  if (carrier.Buttons.onTouchDown(TOUCH3)) { // C: Move up
+  if (carrier.Buttons.onTouchDown(TOUCH4)) { // C: Move down
     if (cursorRow < 2) {
       eraseCursor();
       cursorRow++;
       drawCursor();
     }
   }
-
    if (carrier.Buttons.onTouchDown(TOUCH2)) { // E: Place mark
     if (board[cursorRow][cursorCol] == ' ') {
       char symbol = (currentPlayer == 1) ? 'X' : 'O';
